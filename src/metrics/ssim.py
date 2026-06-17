@@ -4,8 +4,8 @@ from src.metrics.base_metric import BaseMetric
 
 
 class SSIMMetric(BaseMetric):
-    def __init__(self, *args, **kwargs):
-        super().__init__(name="SSIM", *args, **kwargs)
+    def __init__(self, name="SSIM"):
+        super().__init__(name=name)
         self.metric = StructuralSimilarityIndexMeasure(data_range=1.0)
 
     def __call__(self, reconstruction, lensed_roi, **batch):

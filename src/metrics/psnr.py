@@ -4,8 +4,8 @@ from src.metrics.base_metric import BaseMetric
 
 
 class PSNRMetric(BaseMetric):
-    def __init__(self, *args, **kwargs):
-        super().__init__(name="PSNR", *args, **kwargs)
+    def __init__(self, name="PSNR"):
+        super().__init__(name=name)
         self.metric = PeakSignalNoiseRatio(data_range=1)
 
     def __call__(self, reconstruction, lensed_roi, **batch):

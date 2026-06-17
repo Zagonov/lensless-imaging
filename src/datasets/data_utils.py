@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from hydra.utils import instantiate
 
-from src.datasets.collate import lensless_collate_fn
+from src.datasets.collate import collate_fn
 
 
 def inf_loop(dataloader):
@@ -94,7 +94,7 @@ def get_dataloaders(config, device):
         partition_dataloader = instantiate(
             config.dataloader,
             dataset=dataset,
-            collate_fn=lensless_collate_fn,
+            collate_fn=collate_fn,
             drop_last=(dataset_partition == "train"),
             shuffle=(dataset_partition == "train"),
             worker_init_fn=set_worker_seed,

@@ -1,0 +1,14 @@
+_target_: src.model.ModularLeADMM
+n_iter: 5
+mu1_init: 1e-4
+mu2_init: 1e-4
+mu3_init: 1e-4
+tau_init: 2e-4
+learnable: true
+padded_scale: 2
+return_full: true
+use_preprocessor: true
+use_postprocessor: true
+pre_channels: [32, 64, 116, 128]
+post_channels: [32, 64, 116, 128]
+n_blocks: 4

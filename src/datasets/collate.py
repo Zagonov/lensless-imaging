@@ -10,3 +10,6 @@ def collate_fn(items):
         "psf": torch.stack([item["psf"] for item in items]),
         "has_lensed": torch.stack([item["has_lensed"] for item in items]),
     }
+
+
+lensless_collate_fn = collate_fn

@@ -1,9 +1,15 @@
 import numpy as np
+import torch
 from datasets import load_dataset
 from huggingface_hub import hf_hub_download
 
 from src.datasets.base_dataset import BaseDataset
-from src.lensless_helpers.preprocessor import get_dataset_object
+from src.lensless_helpers.preprocessor import (
+    convert_image_to_float,
+    force_rgb,
+    get_cropped_lensed,
+)
+from src.lensless_helpers.psf import simulate_psf_from_mask
 
 
 class DigiCamMirflickrDataset(BaseDataset):
@@ -23,6 +29,7 @@ class DigiCamMirflickrDataset(BaseDataset):
             cache_dir=data_dir
         )
         self.mask_paths = {}
+        self.psf_cache = {}
         index = self._create_index(len(self.dataset))
         super().__init__(
             index,
@@ -34,12 +41,18 @@ class DigiCamMirflickrDataset(BaseDataset):
     def load_object(self, data_dict):
         sample = self.dataset[data_dict["hf_index"]]
         mask_label = int(sample["mask_label"])
-        mask_vals = np.load(self.get_mask_path(mask_label))
-        lensed, lensless, psf = get_dataset_object(
-            sample["lensed"],
-            sample["lensless"],
-            mask_vals
-        )
+
+        lensed = convert_image_to_float(force_rgb(np.array(sample["lensed"])))
+        lensless = convert_image_to_float(force_rgb(np.array(sample["lensless"])))
+        lensless = torch.rot90(torch.from_numpy(lensless), dims=(-3, -2), k=2)
+        lensed = get_cropped_lensed(lensed, lensless)
+        lensed = torch.from_numpy(lensed)
+
+        if mask_label not in self.psf_cache:
+            mask_vals = np.load(self.get_mask_path(mask_label))
+            self.psf_cache[mask_label] = simulate_psf_from_mask(mask_vals)
+
+        psf = self.psf_cache[mask_label]
         return self.build_item(data_dict["id"], lensless, lensed, psf, has_lensed=True)
 
     @staticmethod

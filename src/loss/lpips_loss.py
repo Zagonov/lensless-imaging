@@ -11,5 +11,7 @@ class LPIPSLoss(nn.Module):
         )
 
     def forward(self, reconstruction, lensed_roi, **batch):
+        reconstruction = reconstruction.clamp(0, 1)
+        lensed_roi = lensed_roi.clamp(0, 1)
         loss = self.loss(reconstruction, lensed_roi)
         return {"loss": loss}
