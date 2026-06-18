@@ -35,9 +35,13 @@ def main(config):
     criterion = instantiate(config.loss_function).to(device)
     metrics = instantiate(config.metrics)
 
-    trainable_params = filter(lambda p: p.requires_grad, model.parameters())
-    optimizer = instantiate(config.optimizer, params=trainable_params)
-    lr_scheduler = instantiate(config.lr_scheduler, optimizer=optimizer)
+    trainable_params = [p for p in model.parameters() if p.requires_grad]
+    if len(trainable_params) == 0:
+        optimizer = None
+        lr_scheduler = None
+    else:
+        optimizer = instantiate(config.optimizer, params=trainable_params)
+        lr_scheduler = instantiate(config.lr_scheduler, optimizer=optimizer)
 
     trainer = Trainer(
         model=model,

@@ -8,13 +8,13 @@ class Trainer(BaseTrainer):
 
         batch_size = batch["lensless"].shape[0]
 
-        if self.is_train:
+        if self.is_train and self.optimizer is not None:
             self.optimizer.zero_grad()
 
         batch.update(self.model(**batch))
         batch.update(self.criterion(**batch))
 
-        if self.is_train:
+        if self.is_train and self.optimizer is not None:
             batch["loss"].backward()
             self._clip_grad_norm()
             self.optimizer.step()

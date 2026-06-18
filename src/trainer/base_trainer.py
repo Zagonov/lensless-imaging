@@ -117,7 +117,8 @@ class BaseTrainer:
             if step % self.log_step == 0 or step == self.start_step:
                 if self.writer is not None:
                     self.writer.set_step(step, "train")
-                    self.writer.add_scalar("learning rate", self._get_lr())
+                    if self.optimizer is not None:
+                        self.writer.add_scalar("learning rate", self._get_lr())
                 self._log_scalars(self.train_metrics)
                 self.train_metrics.reset()
 
@@ -261,10 +262,11 @@ class BaseTrainer:
         state = {
             "step": step,
             "state_dict": self.model.state_dict(),
-            "optimizer": self.optimizer.state_dict(),
             "monitor_best": self.mnt_best,
             "config": self.config,
         }
+        if self.optimizer is not None:
+            state["optimizer"] = self.optimizer.state_dict()
         if self.lr_scheduler is not None:
             state["lr_scheduler"] = self.lr_scheduler.state_dict()
 
@@ -289,7 +291,8 @@ class BaseTrainer:
         self.start_step = checkpoint["step"] + 1
         self.mnt_best = checkpoint["monitor_best"]
         self.model.load_state_dict(checkpoint["state_dict"])
-        self.optimizer.load_state_dict(checkpoint["optimizer"])
+        if self.optimizer is not None and "optimizer" in checkpoint:
+            self.optimizer.load_state_dict(checkpoint["optimizer"])
         if self.lr_scheduler is not None and "lr_scheduler" in checkpoint:
             self.lr_scheduler.load_state_dict(checkpoint["lr_scheduler"])
         self.logger.info(
