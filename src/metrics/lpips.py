@@ -7,8 +7,7 @@ class LPIPSMetric(BaseMetric):
     def __init__(self, name="LPIPS"):
         super().__init__(name=name)
         self.metric = LearnedPerceptualImagePatchSimilarity(
-            net_type="vgg",
-            normalize=True
+            net_type="vgg", normalize=True
         )
 
     def __call__(self, reconstruction, lensed_roi, **batch):

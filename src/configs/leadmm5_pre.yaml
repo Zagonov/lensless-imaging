@@ -19,14 +19,14 @@ loss_function:
   lambda_lpips: 0.1
 
 trainer:
-  log_step: 50
+  log_step: 10
   image_log_step: 100
-  eval_step: 100
-  eval_max_batches: 100
+  eval_step: 1000
+  eval_max_batches: 50
   final_eval: true
   final_eval_max_batches: -1
-  total_steps: 15000
-  save_step: 200
+  total_steps: 20000
+  save_step: 1000
   device_tensors: ["lensless", "lensed", "lensed_roi", "psf", "has_lensed"]
   resume_from: null
   from_pretrained: null

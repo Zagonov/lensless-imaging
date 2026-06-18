@@ -283,7 +283,9 @@ class BaseTrainer:
             self.logger.info("Saving current best: model_best.pth ...")
 
     def _resume_checkpoint(self, resume_path):
-        checkpoint = torch.load(str(resume_path), map_location=self.device)
+        checkpoint = torch.load(
+            str(resume_path), map_location=self.device, weights_only=False
+        )
         self.start_step = checkpoint["step"] + 1
         self.mnt_best = checkpoint["monitor_best"]
         self.model.load_state_dict(checkpoint["state_dict"])
@@ -295,7 +297,9 @@ class BaseTrainer:
         )
 
     def _from_pretrained(self, pretrained_path):
-        checkpoint = torch.load(str(pretrained_path), map_location=self.device)
+        checkpoint = torch.load(
+            str(pretrained_path), map_location=self.device, weights_only=False
+        )
         if "state_dict" in checkpoint:
             self.model.load_state_dict(checkpoint["state_dict"])
         else:

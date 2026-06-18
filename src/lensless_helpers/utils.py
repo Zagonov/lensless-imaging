@@ -1,7 +1,8 @@
-import torch
-import numpy as np
-import cv2
 import os
+
+import cv2
+import numpy as np
+import torch
 
 try:
     import torch
@@ -51,7 +52,6 @@ def rgb2gray(rgb, weights=None, keepchanneldim=True):
             use_torch = True
 
     if use_torch:
-
         # move channel dimension to third to last
         if len(rgb.shape) == 4:
             rgb = rgb.permute(0, 3, 1, 2)
@@ -74,7 +74,6 @@ def rgb2gray(rgb, weights=None, keepchanneldim=True):
         return image
 
     else:
-
         if weights is None:
             weights = np.array([0.299, 0.587, 0.114])
         assert len(weights) == 3
@@ -90,7 +89,7 @@ def rgb2gray(rgb, weights=None, keepchanneldim=True):
             return image[..., np.newaxis]
         else:
             return image
-        
+
 
 def load_image(
     fp,
@@ -241,7 +240,6 @@ def load_image(
         img = np.fliplr(img)
 
     if bg is not None:
-
         # if bg is float vector, turn into int-valued vector
         if bg.max() <= 1 and img.dtype not in [np.float32, np.float64]:
             bg = bg * get_max_val(img)
@@ -306,7 +304,9 @@ def get_max_val(img, nbits=None):
     max_val = 2**nbits - 1
     if img.max() > max_val:
         new_nbit = int(np.ceil(np.log2(img.max())))
-        print(f"Detected pixel value larger than {nbits}-bit range, using {new_nbit}-bit range.")
+        print(
+            f"Detected pixel value larger than {nbits}-bit range, using {new_nbit}-bit range."
+        )
         max_val = 2**new_nbit - 1
     return max_val
 
@@ -417,7 +417,9 @@ def resize(img, factor=None, shape=None, interpolation=cv2.INTER_CUBIC):
     max_val = img.max()
     img_shape = np.array(img.shape)[-3:-1]
 
-    assert not ((factor is None) and (shape is None)), "Must specify either factor or shape"
+    assert not (
+        (factor is None) and (shape is None)
+    ), "Must specify either factor or shape"
     new_shape = tuple(img_shape * factor) if shape is None else shape[-3:-1]
     new_shape = [int(i) for i in new_shape]
 
@@ -434,7 +436,9 @@ def resize(img, factor=None, shape=None, interpolation=cv2.INTER_CUBIC):
     else:
         resized = np.array(
             [
-                cv2.resize(img[i], dsize=tuple(new_shape[::-1]), interpolation=interpolation)
+                cv2.resize(
+                    img[i], dsize=tuple(new_shape[::-1]), interpolation=interpolation
+                )
                 for i in range(img.shape[-4])
             ]
         )
@@ -467,5 +471,3 @@ def get_ctypes(dtype, is_torch):
             return torch.complex128, np.complex128
         else:
             raise ValueError("Unexpected dtype: ", dtype)
-        
-

@@ -28,7 +28,7 @@ class LeADMM(nn.Module):
         roi_height=200,
         roi_width=266,
         eps=1e-8,
-        return_full=True
+        return_full=True,
     ):
         super().__init__()
         self.n_iter = n_iter
@@ -131,8 +131,8 @@ class LeADMM(nn.Module):
         reconstruction_full = crop_center(w, sensor_height, sensor_width)
         reconstruction = reconstruction_full[
             ...,
-            self.roi_top:self.roi_top + self.roi_height,
-            self.roi_left:self.roi_left + self.roi_width,
+            self.roi_top : self.roi_top + self.roi_height,
+            self.roi_left : self.roi_left + self.roi_width,
         ]
 
         outputs = {"reconstruction": reconstruction}

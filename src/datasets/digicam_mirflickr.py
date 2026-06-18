@@ -1,8 +1,8 @@
 import numpy as np
 import torch
-from datasets import load_dataset
 from huggingface_hub import hf_hub_download
 
+from datasets import load_dataset
 from src.datasets.base_dataset import BaseDataset
 from src.lensless_helpers.preprocessor import (
     convert_image_to_float,
@@ -19,14 +19,12 @@ class DigiCamMirflickrDataset(BaseDataset):
         data_dir=None,
         limit=None,
         shuffle_index=False,
-        instance_transforms=None
+        instance_transforms=None,
     ):
         self.repo_id = "bezzam/DigiCam-Mirflickr-MultiMask-10K"
         self.data_dir = data_dir
         self.dataset = load_dataset(
-            "bezzam/DigiCam-Mirflickr-MultiMask-10K", 
-            split=split, 
-            cache_dir=data_dir
+            "bezzam/DigiCam-Mirflickr-MultiMask-10K", split=split, cache_dir=data_dir
         )
         self.mask_paths = {}
         self.psf_cache = {}
@@ -35,7 +33,7 @@ class DigiCamMirflickrDataset(BaseDataset):
             index,
             limit=limit,
             shuffle_index=shuffle_index,
-            instance_transforms=instance_transforms
+            instance_transforms=instance_transforms,
         )
 
     def load_object(self, data_dict):
@@ -58,11 +56,7 @@ class DigiCamMirflickrDataset(BaseDataset):
     @staticmethod
     def _create_index(dataset_length):
         return [
-            {
-                "id": f"{i:06d}",
-                "hf_index": i,
-                "has_lensed": True
-            }
+            {"id": f"{i:06d}", "hf_index": i, "has_lensed": True}
             for i in range(dataset_length)
         ]
 
@@ -72,6 +66,6 @@ class DigiCamMirflickrDataset(BaseDataset):
                 repo_id=self.repo_id,
                 repo_type="dataset",
                 filename=f"masks/mask_{mask_label}.npy",
-                cache_dir=self.data_dir
+                cache_dir=self.data_dir,
             )
         return self.mask_paths[mask_label]

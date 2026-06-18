@@ -1,9 +1,9 @@
-import numpy as np
 from enum import Enum
+
+import numpy as np
 from cv2 import resize
 
-from src.lensless_helpers.utils import rgb2gray
-from src.lensless_helpers.utils import load_image
+from src.lensless_helpers.utils import load_image, rgb2gray
 
 
 class SensorOptions(Enum):
@@ -159,7 +159,9 @@ class VirtualSensor(object):
 
         if diagonal is not None:
             # account for possible deadspace
-            self.size = self.diagonal / np.linalg.norm(self.resolution) * self.resolution
+            self.size = (
+                self.diagonal / np.linalg.norm(self.resolution) * self.resolution
+            )
         else:
             self.size = self.pixel_size * self.resolution
 
@@ -221,7 +223,6 @@ class VirtualSensor(object):
         if scene is None:
             scene = np.random.rand(*self.image_shape)
         else:
-
             if isinstance(scene, str):
                 scene = load_image(scene)
             else:
@@ -239,7 +240,6 @@ class VirtualSensor(object):
 
             # pad if necessary
             if np.any(diff):
-
                 # center padding
                 pad_width = (
                     (diff[0] // 2, diff[0] - diff[0] // 2),

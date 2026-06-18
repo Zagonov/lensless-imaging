@@ -19,10 +19,7 @@ def main(config):
     project_config = OmegaConf.to_container(config, resolve=True)
     logger = setup_saving_and_logging(config)
     writer = instantiate(
-        config.writer,
-        logger=logger,
-        project_config=project_config,
-        _recursive_=False
+        config.writer, logger=logger, project_config=project_config, _recursive_=False
     )
 
     if config.trainer.device == "auto":
@@ -53,7 +50,7 @@ def main(config):
         dataloaders=dataloaders,
         logger=logger,
         writer=writer,
-        batch_transforms=batch_transforms
+        batch_transforms=batch_transforms,
     )
     trainer.train()
 

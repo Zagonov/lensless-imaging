@@ -79,8 +79,8 @@ class ModularLeADMM(nn.Module):
 
         reconstruction = reconstruction_full[
             ...,
-            self.roi_top:self.roi_top + self.roi_height,
-            self.roi_left:self.roi_left + self.roi_width,
+            self.roi_top : self.roi_top + self.roi_height,
+            self.roi_left : self.roi_left + self.roi_width,
         ]
 
         result = {"reconstruction": reconstruction}

@@ -1,10 +1,10 @@
 import os
+
 import numpy as np
 from scipy.ndimage import rotate as rotate_func
-
-from src.lensless_helpers.utils import get_ctypes
 from slm_controller.hardware import SLMParam, slm_devices
 
+from src.lensless_helpers.utils import get_ctypes
 
 try:
     import torch
@@ -16,11 +16,11 @@ except ImportError:
     torch_available = False
 
 try:
-    from waveprop.spherical import spherical_prop
     from waveprop.color import ColorSystem
+    from waveprop.devices import SLMParam as SLMParam_wp
     from waveprop.rs import angular_spectrum
     from waveprop.slm import get_centers
-    from waveprop.devices import SLMParam as SLMParam_wp
+    from waveprop.spherical import spherical_prop
 
     waveprop_available = True
 except ImportError:
@@ -35,7 +35,14 @@ SUPPORTED_DEVICE = {
 
 
 def get_programmable_mask(
-    vals, sensor, slm_param, rotate=None, flipud=False, nbits=8, color_filter=None, deadspace=True
+    vals,
+    sensor,
+    slm_param,
+    rotate=None,
+    flipud=False,
+    nbits=8,
+    color_filter=None,
+    deadspace=True,
 ):
     """
     Get mask as a numpy or torch array. Return same type.
@@ -77,7 +84,6 @@ def get_programmable_mask(
             color_filter = torch.tensor(color_filter).to(vals)
 
     if color_filter is not None:
-
         if isinstance(color_filter, np.ndarray):
             if flipud:
                 color_filter = np.flipud(color_filter)
@@ -97,13 +103,13 @@ def get_programmable_mask(
     pixel_pitch = slm_param[SLMParam_wp.PITCH]
     d1 = sensor.pitch
     if deadspace:
-
         centers = get_centers(n_active_slm_pixels, pixel_pitch=pixel_pitch)
 
-        _height_pixel, _width_pixel = (slm_param[SLMParam_wp.CELL_SIZE] / d1).astype(int)
+        _height_pixel, _width_pixel = (slm_param[SLMParam_wp.CELL_SIZE] / d1).astype(
+            int
+        )
 
         for i, _center in enumerate(centers):
-
             _center_pixel = (_center / d1 + sensor.resolution / 2).astype(int)
             _center_top_left_pixel = (
                 _center_pixel[0] - np.floor(_height_pixel / 2).astype(int),
@@ -123,18 +129,20 @@ def get_programmable_mask(
             ] = mask_val
 
     else:
-
         # use color filter to turn mask into RGB
         if use_torch:
-            active_mask_rgb = torch.zeros((n_color_filter,) + n_active_slm_pixels).to(vals)
+            active_mask_rgb = torch.zeros((n_color_filter,) + n_active_slm_pixels).to(
+                vals
+            )
         else:
-            active_mask_rgb = np.zeros((n_color_filter,) + n_active_slm_pixels, dtype=dtype)
+            active_mask_rgb = np.zeros(
+                (n_color_filter,) + n_active_slm_pixels, dtype=dtype
+            )
 
         # TODO avoid for loop
         for i in range(n_active_slm_pixels[0]):
             row_idx = i % color_filter.shape[0]
             for j in range(n_active_slm_pixels[1]):
-
                 col_idx = j % color_filter.shape[1]
                 color_filter_idx = color_filter[row_idx, col_idx]
                 active_mask_rgb[
@@ -142,9 +150,9 @@ def get_programmable_mask(
                 ] = (vals[i, j] * color_filter_idx)
 
         # size of active pixels in pixels
-        n_active_dim = np.around(slm_param[SLMParam_wp.PITCH] * n_active_slm_pixels / d1).astype(
-            int
-        )
+        n_active_dim = np.around(
+            slm_param[SLMParam_wp.PITCH] * n_active_slm_pixels / d1
+        ).astype(int)
         # n_active_dim = np.around(slm_param[SLMParam_wp.CELL_SIZE] * n_active_slm_pixels / d1).astype(int)
 
         # resize to n_active_dim
@@ -195,7 +203,10 @@ def adafruit_sub2full(
 
     # pad to full pattern
     pattern = np.zeros((3, 128, 160), dtype=np.uint8)
-    top_left = [center[0] - controllable_shape[1] // 2, center[1] - controllable_shape[2] // 2]
+    top_left = [
+        center[0] - controllable_shape[1] // 2,
+        center[1] - controllable_shape[2] // 2,
+    ]
     pattern[
         :,
         top_left[0] : top_left[0] + controllable_shape[1],
@@ -273,7 +284,6 @@ def get_intensity_psf(
         psfs = np.zeros(mask.shape, dtype=ctype)
 
     if waveprop:
-
         assert sensor is not None, "sensor must be specified"
         assert scene2mask is not None, "scene2mask must be specified"
         assert mask2sensor is not None, "mask2sensor must be specified"
@@ -307,7 +317,6 @@ def get_intensity_psf(
             )
 
     else:
-
         psfs = mask
 
     # -- intensity PSF

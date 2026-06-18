@@ -1,0 +1,14 @@
+defaults:
+  - model: unrolled_admm_20
+  - metrics: main
+  - datasets: custom_dir
+  - dataloader: main
+  - transforms: main
+  - _self_
+
+inferencer:
+  device_tensors: ["lensless", "lensed", "lensed_roi", "psf", "has_lensed"]
+  device: auto
+  save_path: "saved/inference"
+  seed: 1
+  from_pretrained: null

@@ -7,5 +7,5 @@ __all__ = [
     "BaseDataset",
     "CustomDirDataset",
     "DigiCamMirflickrDataset",
-    "lensless_collate_fn"
+    "lensless_collate_fn",
 ]

@@ -6,8 +6,7 @@ class LPIPSLoss(nn.Module):
     def __init__(self):
         super().__init__()
         self.loss = LearnedPerceptualImagePatchSimilarity(
-            net_type="vgg",
-            normalize=True
+            net_type="vgg", normalize=True
         )
 
     def forward(self, reconstruction, lensed_roi, **batch):

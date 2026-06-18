@@ -1,0 +1,4 @@
+custom:
+  _target_: src.datasets.CustomDirDataset
+  data_dir: "data/custom"
+  instance_transforms: ${transforms.instance_transforms.inference}

@@ -22,7 +22,9 @@ class Trainer(BaseTrainer):
                 self.lr_scheduler.step()
 
         batch["grad_norm"] = self._get_grad_norm()
-        metric_funcs = self.metrics["train"] if self.is_train else self.metrics["inference"]
+        metric_funcs = (
+            self.metrics["train"] if self.is_train else self.metrics["inference"]
+        )
 
         for loss_name in self.config.writer.loss_names:
             metrics.update(loss_name, batch[loss_name].item(), n=batch_size)
@@ -35,7 +37,9 @@ class Trainer(BaseTrainer):
         return batch
 
     def _log_batch(self, batch, mode="train"):
-        lensless = batch["lensless"][0].detach().cpu().clamp(0, 1).permute(1, 2, 0).numpy()
+        lensless = (
+            batch["lensless"][0].detach().cpu().clamp(0, 1).permute(1, 2, 0).numpy()
+        )
         reconstruction = (
             batch["reconstruction"][0]
             .detach()
@@ -45,12 +49,7 @@ class Trainer(BaseTrainer):
             .numpy()
         )
         target = (
-            batch["lensed_roi"][0]
-            .detach()
-            .cpu()
-            .clamp(0, 1)
-            .permute(1, 2, 0)
-            .numpy()
+            batch["lensed_roi"][0].detach().cpu().clamp(0, 1).permute(1, 2, 0).numpy()
         )
 
         self.writer.add_image("lensless", lensless)

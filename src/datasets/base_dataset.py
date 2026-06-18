@@ -8,11 +8,7 @@ from src.lensless_helpers.preprocessor import get_roi
 
 class BaseDataset(Dataset):
     def __init__(
-        self, 
-        index, 
-        limit=None,
-        shuffle_index=False, 
-        instance_transforms=None
+        self, index, limit=None, shuffle_index=False, instance_transforms=None
     ):
         self._assert_index_is_valid(index)
         index = self._shuffle_and_limit_index(index, limit, shuffle_index)

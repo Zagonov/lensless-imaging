@@ -1,3 +1,4 @@
+import torch.nn.functional as F
 from torch import nn
 
 
@@ -65,6 +66,12 @@ class DRUNet(nn.Module):
         self.tail = nn.Conv2d(c1, out_channels, kernel_size=3, padding=1)
 
     def forward(self, x):
+        height, width = x.shape[-2:]
+        pad_height = (8 - height % 8) % 8
+        pad_width = (8 - width % 8) % 8
+        if pad_height != 0 or pad_width != 0:
+            x = F.pad(x, (0, pad_width, 0, pad_height))
+
         residual = x
 
         x1 = self.head(x)
@@ -77,4 +84,9 @@ class DRUNet(nn.Module):
         x = self.up2(x) + x2
         x = self.up1(x) + x1
 
-        return self.tail(x) + residual
+        x = self.tail(x) + residual
+
+        if pad_height != 0 or pad_width != 0:
+            x = x[..., :height, :width]
+
+        return x
